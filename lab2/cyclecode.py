@@ -32,7 +32,7 @@ class CyclicCode:
 
         return bit_arr
 
-    def endcode(self, bit_arr: (ba.bitarray, np.array, np.ndarray), is_reshaped: bool = False) -> ba.bitarray:
+    def encode(self, bit_arr: (ba.bitarray, np.array, np.ndarray), is_reshaped: bool = False) -> ba.bitarray:
         """
         :param bit_arr: bitarray that length multiple of self.k
         :param is_reshaped: flag is it array shape - (l,self.k), where l - some value greater 0
@@ -98,7 +98,7 @@ def main():
 
     # task 1
     print("\n\nTask1")
-    encode_a = main_obj.endcode(bit_a)
+    encode_a = main_obj.encode(bit_a)
     print(f"endcode a: {encode_a}")
 
     # task 2
