@@ -139,7 +139,7 @@ def main():
     bit_arc[rand_index] = not bit_arc[rand_index]
     print(bit_arc[rand_index])
 
-    with open(cur_path / "lab1.inputfile_crashed.zip", "wb") as arc:
+    with open(cur_path / "inputfile_crashed.zip", "wb") as arc:
         bit_arc.tofile(arc)
 
     # Task 7
