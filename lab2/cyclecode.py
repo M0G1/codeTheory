@@ -27,7 +27,7 @@ class CyclicCode:
             if isinstance(bit_arr, ba.bitarray):
                 bit_arr = bit_arr.tolist()
             if isinstance(bit_arr, list):
-                bit_arr = np.asarray(bit_arr, dtype=np.int8)
+                bit_arr = np.asarray(bit_arr, dtype=dtype)
             bit_arr = bit_arr.reshape((len(bit_arr) // k, k))
 
         return bit_arr
