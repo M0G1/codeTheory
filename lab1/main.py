@@ -7,7 +7,7 @@ import pathlib
 # This is a sample Python script.
 
 # For correct working of the path system and so that the files that are used would be in this directory
-cur_path = pathlib.Path() / "lab1"
+cur_path = pathlib.Path()
 
 
 
