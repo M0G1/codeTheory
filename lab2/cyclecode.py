@@ -244,13 +244,14 @@ class CyclicCode:
         Example
         You have n = 15, k=9
         and lenght of msg in bits is 136.
-        To decode msg u need extend bitarry to 144 bit. And it also divide by 8 without remain.
+        To decode msg u need extend bitarry to 144 bit (144⋮ 9 144⋮ 8). And it also divide by 8 without remain.
+        144 = 8 * 9 * 2
         And after decoding, u need delete byte at the end of msg
 
         And in other case u have msg with 144 bits lenght
         :param file_in:
         :param file_out:
-        :param make_table:
+        :param make_table: function is returned the special dict. See CyclicCode.make_table()
         :param is_fix_err:
         :return:
         """
