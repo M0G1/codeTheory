@@ -18,6 +18,7 @@ class CyclicCode:
         self.n = n
         self.t = t
         self.L = L
+        self.bone = dict()
         self.n_k = n - k  # n minus k
         self.extended_g = self.list_g.copy()
         self.extended_g.extend([0] * (n - k))
@@ -65,10 +66,10 @@ class CyclicCode:
 
     def remain_dev(self, bit_arr: ba.bitarray, is_reshaped: bool = False) -> ba.bitarray:
         """
-                :param bit_arr: bitarray that length multiple of self.k
-                :param is_reshaped: flag is it array shape - (l,self.k), where l - some value greater 0
-                :return: endcoded array multiple of self.n
-                """
+            :param bit_arr: bitarray that length multiple of self.k
+            :param is_reshaped: flag is it array shape - (l,self.k), where l - some value greater 0
+            :return: endcoded array multiple of self.n
+        """
         bit_list = self.reshape_to_np_arr(bit_arr, self.n, is_reshaped)
         coded_arr = ba.bitarray()
         # print(f"bit_list: {bit_list}")
@@ -86,6 +87,11 @@ class CyclicCode:
         return coded_arr
 
     def encody_sys(self, bit_arr: ba.bitarray, is_reshaped: bool = False):
+        """
+        :param bit_arr:
+        :param is_reshaped:
+        :return:
+        """
         # print(len(bit_arr))
         encody = ba.bitarray()
 
@@ -102,12 +108,11 @@ class CyclicCode:
 
     def decode_sys(self, bit_arr: ba.bitarray, make_table, is_fix_err: bool = True):
         """
-        With correct
+        With correct.
         :param bit_arr:
         :param is_reshaped:
         :return:
         """
-
         bit_arr = self.add_to_multiplicity_n(bit_arr, self.n)
         decoded = ba.bitarray()
         remain_d = None
@@ -159,9 +164,10 @@ class CyclicCode:
 
     def make_table_L(self):
         syndromes = dict()
-        syndromes["0"*self.n_k] = np.array([])
+        syndromes["0" * self.n_k] = np.array([])
         for err_pac_num in range(2 ** (self.L - 2)):
-            err_pac = ba.bitarray("1" + self.int_to_str_bits(err_pac_num, self.L - 2) + "1")
+            err_pac = self.get_err_pack(err_pac_num, self.L)
+
             for i in range(self.n - self.L + 1):
                 err = ba.bitarray(self.n)
                 err.setall(False)
@@ -173,6 +179,15 @@ class CyclicCode:
         # print(syndromes)
         # print(f"len(syndromes) {len(syndromes)}")
         return syndromes
+
+    @staticmethod
+    def get_err_pack(decimal_num_of_num: int, L: int):
+        err_pac = None
+        if L > 1:
+            err_pac = ba.bitarray("1" + CyclicCode.int_to_str_bits(decimal_num_of_num, L - 2) + "1")
+        else:
+            err_pac = ba.bitarray("1")
+        return err_pac
 
     @staticmethod
     def ba_to_str_bits(bit_arr: ba.bitarray) -> str:
@@ -197,18 +212,48 @@ class CyclicCode:
         return bit_a
 
     def encode_file(self, file_in, file_out):
+        """
+
+        :param file_in:
+        :param file_out:
+        :return:
+        """
+
         bit_a = ba.bitarray()
         bit_a.fromfile(file_in)
+        len_bit_a = len(bit_a)
 
         print(f"our msg {len(bit_a)}, {bit_a}")
         bit_a = self.add_to_multiplicity_n(bit_a, self.k)
         print(f"our msg {len(bit_a)}, {bit_a}")
 
+        if len(bit_a) - len_bit_a >= 8:
+            self.bone[len(bit_a)] = len_bit_a
+
         encode = self.encody_sys(bit_a)
         print(f"endcode {len(encode)}, {encode}")
+
         encode.tofile(file_out)
 
     def decode_file(self, file_in, file_out, make_table, is_fix_err: bool = True):
+        """
+        Have inner dependence from method encode_file
+        Doesn't recomended to call it without calling the encode_file method.
+        You can get back more bits what in really msg.
+
+        Example
+        You have n = 15, k=9
+        and lenght of msg in bits is 136.
+        To decode msg u need extend bitarry to 144 bit. And it also divide by 8 without remain.
+        And after decoding, u need delete byte at the end of msg
+
+        And in other case u have msg with 144 bits lenght
+        :param file_in:
+        :param file_out:
+        :param make_table:
+        :param is_fix_err:
+        :return:
+        """
         bit_a = ba.bitarray()
         bit_a.fromfile(file_in)
 
@@ -217,18 +262,26 @@ class CyclicCode:
         print(f"endcode {len(bit_a)}, {bit_a}")
 
         decode = self.decode_sys(bit_a, make_table, is_fix_err=is_fix_err)
-        decode = self.add_to_multiplicity_n(decode, 8, is_to_less=True)
+
+        key = len(decode)
+        true_len = self.bone.setdefault(key, None)
+        if true_len:
+            decode = decode[:true_len]
+        # clear the memory
+        del self.bone[key]
+
         print(f"decode  {len(decode)}, {decode}")
+        # decode = self.add_to_multiplicity_n(decode, 8, is_to_less=True)
         decode.tofile(file_out)
 
     def make_pac_err_ba(self, bit_a: ba.bitarray):
         """
-`
+
         :param bit_a: have length >= self.L
         :return:
         """
         rand_pack_num = random.randint(1, 2 ** (self.L - 2) - 1) if self.L != 2 else 0
-        err_pac = ba.bitarray("1" + self.int_to_str_bits(rand_pack_num, self.L - 2) + "1")
+        err_pac = self.get_err_pack(rand_pack_num, self.L)
 
         rand_index = random.randint(0, len(bit_a) // self.n - 1)  # выбираем блок из n бит
         rand_index = self.n * rand_index + random.randint(0, self.n - self.L)  # выбираем позицию в блоке и
@@ -313,7 +366,7 @@ def main():
 
         with open(cur_path / "output", "wb") as file_out:
             with open(cur_path / "err", "rb") as file_err:
-                main_obj.decode_file(file_err, file_out,main_obj.make_table)
+                main_obj.decode_file(file_err, file_out, main_obj.make_table)
 
     print("\n\nTask 7 from task list 2-3")
     g_new = ba.bitarray([1, 0, 0, 0, 1, 0, 1, 1, 1])
@@ -331,7 +384,7 @@ def main():
             with open(cur_path / "err", "rb") as file_err:
                 second_obj.decode_file(file_err, file_out, second_obj.make_table)
 
-    # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    # Не уверен, что сделал правильно. Скорее всего есть решение с какие-нибудь сдвигами
     print("\n\nTask 8 from task list 2-3")
     gg = ba.bitarray([1, 1, 1, 1, 0, 0, 1])
 
