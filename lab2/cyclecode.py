@@ -97,7 +97,7 @@ class CyclicCode(BaseCode):
         :param is_reshaped:
         :return:
         """
-        bit_arr = self.add_to_multiplicity_n(bit_arr, self.n)
+        bit_arr = BaseCode.add_to_multiplicity_n(bit_arr, self.n)
         decoded = ba.bitarray()
         remain_d = None
         syndromes = None
@@ -182,7 +182,7 @@ class CyclicCode(BaseCode):
         len_bit_a = len(bit_a)
 
         print(f"our msg {len(bit_a)}, {bit_a}")
-        bit_a = self.add_to_multiplicity_n(bit_a, self.k)
+        bit_a = BaseCode.add_to_multiplicity_n(bit_a, self.k)
         print(f"our msg {len(bit_a)}, {bit_a}")
 
         if len(bit_a) - len_bit_a >= 8:
@@ -217,7 +217,7 @@ class CyclicCode(BaseCode):
         bit_a.fromfile(file_in)
 
         print(f"endcode {len(bit_a)}, {bit_a}")
-        bit_a = self.add_to_multiplicity_n(bit_a, self.n, is_to_less=True)
+        bit_a = BaseCode.add_to_multiplicity_n(bit_a, self.n, is_to_less=True)
         print(f"endcode {len(bit_a)}, {bit_a}")
 
         decode = self.decode_sys(bit_a, make_table, is_fix_err=is_fix_err)
@@ -230,7 +230,7 @@ class CyclicCode(BaseCode):
         del self.bone[key]
 
         print(f"decode  {len(decode)}, {decode}")
-        # decode = self.add_to_multiplicity_n(decode, 8, is_to_less=True)
+        # decode = BaseCode.add_to_multiplicity_n(decode, 8, is_to_less=True)
         decode.tofile(file_out)
 
     def make_pac_err_ba(self, bit_a: ba.bitarray):
@@ -256,7 +256,7 @@ class CyclicCode(BaseCode):
     def make_err_ba(self, bit_a: ba.bitarray):
         """
 
-        :param bit_a: have lehght > 0
+        :param bit_a: have lenght > 0
         :return:
         """
         rand_index = random.randint(0, len(bit_a) - 1)
