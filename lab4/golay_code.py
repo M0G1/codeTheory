@@ -20,8 +20,6 @@ B_matrix = np.asarray([[1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1],
                        [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1],
                        [0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1],
                        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]], dtype=np.int8)
-
-
 class GolayCode(BaseCode):
     def __init__(self, k: int = 12, n: int = 24, B=B_matrix):
         """

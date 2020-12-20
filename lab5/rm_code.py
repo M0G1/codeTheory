@@ -105,6 +105,7 @@ class RM_Code(BaseCode):
             sum ^= i
         return sum
 
+    # 5.3.2
     def decode(self, bit_arr: ba.bitarray):
 
         bit_list = BaseCode.reshape_to_np_arr(bit_arr, self.n)

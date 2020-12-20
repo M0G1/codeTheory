@@ -135,9 +135,9 @@ class CyclicCode(BaseCode):
         for i in range(2 ** self.n):
             err = ba.bitarray(self.int_to_str_bits(i, self.n))
             if self.wt(err) <= self.t:
-                # print(self.wt(err), err, len(err))
                 synd = self.remain_dev(err)[:self.n_k]
                 str_synd = self.ba_to_str_bits(synd)
+                print(self.wt(err), err, str_synd)
                 syndromes[str_synd] = np.nonzero(list(err))[0]
         # print(f"len(syndromes) {len(syndromes)}")
         return syndromes
@@ -285,14 +285,14 @@ def main():
     main_obj = CyclicCode(bit_g)
 
     # task 1
-    print("\n\nTask1")
+    print("\n\nTask2")
     encode_a = main_obj.encode(bit_a)
     print(f"a: {a}")
     print(f"g: {g}")
     print(f"endcode a: {encode_a}")
 
     # task 2
-    print("\n\nTask2")
+    print("\n\nTask3")
     a2 = [1, 0, 1, 0, 1, 0, 1]
     bit_a2 = ba.bitarray()
     bit_a2.extend(a2)
@@ -300,21 +300,21 @@ def main():
     remain_e_a = main_obj.remain_dev(encode_a)
     remain_a2 = main_obj.remain_dev(bit_a2)
 
-    print(f"remain_dev a: {remain_e_a}")
+    print(f"remain_dev decode a: {remain_e_a}")
     print(f"bit_a2: {a2}\nremain_dev a2: {remain_a2}")
 
     # task 4 from task list
-    print("\n\nTask 4 from task list")
+    print("\n\nTask 4")
     endcody_a = main_obj.encody_sys(bit_a)
     print(f"endcody_a: {endcody_a}")
-    print(main_obj.remain_dev(endcody_a))
+    # print(main_obj.remain_dev(endcody_a))
 
     # task 5 from task list 2-3
-    print("\n\nTask 5 from task list 2-3")
+    print("\n\nTask 5 ")
     print(main_obj.make_table())
 
     # task 5 from task list 2-3
-    print("\n\nTask 6 from task list 2-3")
+    print("\n\nTask 6 ")
     with open(cur_path / "inputfile", "rb") as file_in:
         with open(cur_path / "output", "wb") as file_out:
             main_obj.encode_file(file_in, file_out)
@@ -327,7 +327,7 @@ def main():
             with open(cur_path / "err", "rb") as file_err:
                 main_obj.decode_file(file_err, file_out, main_obj.make_table)
 
-    print("\n\nTask 7 from task list 2-3")
+    print("\n\nTask 7 ")
     g_new = ba.bitarray([1, 0, 0, 0, 1, 0, 1, 1, 1])
     second_obj = CyclicCode(g_new, n=15, k=7, t=2)
     print(second_obj.make_table())
