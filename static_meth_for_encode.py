@@ -33,6 +33,20 @@ class BaseCode:
         return str(bit_arr)[10:-2]
 
     @staticmethod
+    def get_num_from_bit(bits: (str, list)):
+        """
+        bit order. least significant bit is right
+        "110" -> 6
+        :param bits:
+        :return:
+        """
+        if isinstance(bits,np.ndarray):
+            bits = list(bits)
+        if isinstance(bits, list):
+            bits = BaseCode.ba_to_str_bits(ba.bitarray(bits))
+        return int(bits, 2)
+
+    @staticmethod
     def int_to_str_bits(num: int, n) -> str:
         # n - needed length of return str
         if n == 0:
